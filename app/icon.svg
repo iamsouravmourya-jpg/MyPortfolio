@@ -1,6 +1,6 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect width="180" height="180" rx="44" fill="#191a18"/>
-  <rect x="3" y="3" width="174" height="174" rx="41" stroke="rgba(255,255,255,0.18)" stroke-width="4"/>
-  <text x="73" y="128" font-family="Liberation Serif, Georgia, 'Times New Roman', serif" font-size="114" font-weight="bold" fill="#ffffff" text-anchor="middle">S</text>
+  <rect x="3" y="3" width="174" height="174" rx="41" stroke="rgba(255,255,255,0.2)" stroke-width="4"/>
+  <text x="73" y="128" font-family="Georgia, 'Times New Roman', serif" font-size="114" font-weight="bold" fill="#ffffff" text-anchor="middle">S</text>
   <circle cx="126" cy="118" r="14" fill="#d7ff5c"/>
 </svg>

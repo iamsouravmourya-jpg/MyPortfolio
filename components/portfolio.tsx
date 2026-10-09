@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import Image from 'next/image'
 import {
   ArrowDown,
   ArrowUpRight,
@@ -39,8 +38,6 @@ const projects = [
     focus: ['WASM sandboxed runtimes', 'Resilient LLM routing & failover', 'Supabase RLS & cryptographic attestation'],
     repo: 'https://github.com/iamsouravmourya-jpg/LernexAI',
     live: 'https://lernexai.vercel.app/',
-    screenshot: '/lernexai.png',
-    screenshotAlt: 'LernexAI homepage featuring its interactive AI tutor',
     screenPrompt: 'WASM RUNTIME · CONTEXTUAL LLM PIPELINE',
     screenCaption: 'Deterministic sandboxing with sub-200ms streaming inference',
     details: [
@@ -84,8 +81,6 @@ const projects = [
     focus: ['WebGL2 fragment shaders', 'Deterministic 60 FPS scene graph', 'OPFS binary storage & ring-buffer ledger'],
     repo: 'https://github.com/iamsouravmourya-jpg/Corex',
     live: 'https://corex-vert.vercel.app/',
-    screenshot: '/corex.png',
-    screenshotAlt: 'Corex creative studio with its vector tool rail, blank design canvas, and stage controls',
     screenPrompt: 'GPU-ACCELERATED VECTOR STAGE · OPFS VAULT',
     screenCaption: 'Real-time 60 FPS GLSL shader pipelines with binary state ledger',
     details: [
@@ -224,7 +219,7 @@ function ProjectChapter({ project }: { project: (typeof projects)[number] }) {
         <div className="chapter-copy">
           <span className="project-number">
             <span>{project.number}</span>
-            <span className="chapter-mark">{project.mark}</span>
+            <span className="chapter-mark">S</span>
           </span>
           <p className="project-category">{project.category}</p>
           <h3>{project.name}</h3>
@@ -250,14 +245,11 @@ function ProjectChapter({ project }: { project: (typeof projects)[number] }) {
             <p>{project.name} // ACTIVE RUNTIME</p>
             <Sparkles size={16} />
           </div>
-          <div className="featured-slot has-featured-image">
-            <Image
-              className="featured-image"
-              src={project.screenshot}
-              alt={project.screenshotAlt}
-              fill
-              sizes="(max-width: 700px) calc(100vw - 62px), (max-width: 1000px) 80vw, 58vw"
-            />
+          <div className="featured-slot">
+            <span className="featured-index">{project.number} · SYSTEM RUNTIME</span>
+            <span className="featured-mark">S</span>
+            <p className="featured-prompt">{project.screenPrompt}</p>
+            <span className="featured-caption">{project.screenCaption}</span>
           </div>
         </div>
         <ProjectDetails project={project} />
