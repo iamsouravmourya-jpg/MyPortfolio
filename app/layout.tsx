@@ -2,34 +2,17 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Sourav // Product Architect',
-  description: 'Portfolio of Sourav — a next-gen product architect and full-stack engineer building browser-native, zero-burn software architecture.',
-  generator: 'v0.app',
+  title: 'Sourav | Systems Architect',
+  description: 'Sourav is a systems-minded product architect building browser-native systems, technical learning tools, and creative software.',
+  applicationName: 'Sourav',
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/icon.svg',
   },
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'light',
+  themeColor: '#191a18',
 }
 
 export default function RootLayout({

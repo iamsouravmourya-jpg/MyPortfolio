@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import Image from 'next/image'
 import {
   ArrowDown,
   ArrowUpRight,
@@ -17,6 +18,7 @@ import {
   Lock,
   Mail,
   MapPin,
+  MessageCircle,
   RefreshCw,
   ShieldCheck,
   Sparkles,
@@ -37,6 +39,8 @@ const projects = [
     focus: ['WASM sandboxed runtimes', 'Resilient LLM routing & failover', 'Supabase RLS & cryptographic attestation'],
     repo: 'https://github.com/iamsouravmourya-jpg/LernexAI',
     live: 'https://lernexai.vercel.app/',
+    screenshot: '/lernexai.png',
+    screenshotAlt: 'LernexAI homepage featuring its interactive AI tutor',
     screenPrompt: 'WASM RUNTIME · CONTEXTUAL LLM PIPELINE',
     screenCaption: 'Deterministic sandboxing with sub-200ms streaming inference',
     details: [
@@ -80,6 +84,8 @@ const projects = [
     focus: ['WebGL2 fragment shaders', 'Deterministic 60 FPS scene graph', 'OPFS binary storage & ring-buffer ledger'],
     repo: 'https://github.com/iamsouravmourya-jpg/Corex',
     live: 'https://corex-vert.vercel.app/',
+    screenshot: '/corex.png',
+    screenshotAlt: 'Corex creative studio with its vector tool rail, blank design canvas, and stage controls',
     screenPrompt: 'GPU-ACCELERATED VECTOR STAGE · OPFS VAULT',
     screenCaption: 'Real-time 60 FPS GLSL shader pipelines with binary state ledger',
     details: [
@@ -244,11 +250,14 @@ function ProjectChapter({ project }: { project: (typeof projects)[number] }) {
             <p>{project.name} // ACTIVE RUNTIME</p>
             <Sparkles size={16} />
           </div>
-          <div className="featured-slot">
-            <span className="featured-index">TELEMETRY & KERNEL</span>
-            <span className="featured-mark">{project.mark}</span>
-            <span className="featured-prompt">{project.screenPrompt}</span>
-            <span className="featured-caption">{project.screenCaption}</span>
+          <div className="featured-slot has-featured-image">
+            <Image
+              className="featured-image"
+              src={project.screenshot}
+              alt={project.screenshotAlt}
+              fill
+              sizes="(max-width: 700px) calc(100vw - 62px), (max-width: 1000px) 80vw, 58vw"
+            />
           </div>
         </div>
         <ProjectDetails project={project} />
@@ -637,6 +646,7 @@ const architectureViews = {
 function ArchitectureConsole() {
   const [activeProject, setActiveProject] = useState<keyof typeof architectureViews>('lernex')
   const [slideIndex, setSlideIndex] = useState(0)
+  const touchStartX = useRef<number | null>(null)
 
   const projectConfig = architectureViews[activeProject]
   const slides = projectConfig.slides
@@ -668,23 +678,51 @@ function ArchitectureConsole() {
           A rigorous architectural breakdown of data flows, memory isolation boundaries, and distributed state
           machines. Slide through dedicated ASCII blueprints below.
         </p>
-        <div className="architecture-tabs" role="tablist" aria-label="Choose project architecture">
-          {(Object.keys(architectureViews) as (keyof typeof architectureViews)[]).map((key) => (
+        <div className="architecture-project-picker" aria-label="Choose a system to explore">
+          {(Object.keys(architectureViews) as (keyof typeof architectureViews)[]).map((key, index) => (
             <button
               key={key}
               type="button"
-              role="tab"
-              aria-selected={activeProject === key}
-              className={activeProject === key ? 'active' : ''}
+              aria-pressed={activeProject === key}
+              className={`architecture-project-option${activeProject === key ? ' active' : ''}`}
               onClick={() => handleSelectProject(key)}
             >
-              {architectureViews[key].label} ({architectureViews[key].slides.length} Diagrams)
+              <span className="project-option-number">0{index + 1}</span>
+              <span className="project-option-copy"><strong>{architectureViews[key].label}</strong><small>{architectureViews[key].slides.length} system maps</small></span>
+              <ArrowUpRight size={15} />
             </button>
           ))}
         </div>
       </div>
 
-      <div className="architecture-screen">
+      <div
+        className="architecture-screen"
+        role="region"
+        aria-label={`${projectConfig.label} architecture slides`}
+        tabIndex={0}
+        onKeyDown={(event) => {
+          if (event.target instanceof HTMLElement && event.target.closest('button, a, input, pre')) return
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault()
+            handlePrevSlide()
+          } else if (event.key === 'ArrowRight') {
+            event.preventDefault()
+            handleNextSlide()
+          }
+        }}
+        onTouchStart={(event) => {
+          touchStartX.current = event.touches[0]?.clientX ?? null
+        }}
+        onTouchEnd={(event) => {
+          const startX = touchStartX.current
+          touchStartX.current = null
+          if (startX === null || (event.target instanceof HTMLElement && event.target.closest('pre, button, a'))) return
+          const deltaX = event.changedTouches[0].clientX - startX
+          if (Math.abs(deltaX) < 64) return
+          if (deltaX < 0) handleNextSlide()
+          else handlePrevSlide()
+        }}
+      >
         <div className="architecture-windowbar">
           <span>
             <i />
@@ -699,44 +737,7 @@ function ArchitectureConsole() {
           </span>
         </div>
 
-        {/* Interactive Slide Navigation Toolbar */}
-        <div className="arch-slider-toolbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              type="button"
-              className="arch-slide-btn"
-              onClick={handlePrevSlide}
-              aria-label="Previous architecture diagram"
-              title="Previous diagram"
-            >
-              <ChevronLeft size={13} /> PREV
-            </button>
-            <button
-              type="button"
-              className="arch-slide-btn"
-              onClick={handleNextSlide}
-              aria-label="Next architecture diagram"
-              title="Next diagram"
-            >
-              NEXT <ChevronRight size={13} />
-            </button>
-          </div>
-
-          <div className="arch-pill-list" role="tablist" aria-label="Select specific architectural blueprint">
-            {slides.map((s, idx) => (
-              <button
-                key={s.tag}
-                type="button"
-                className={`arch-pill${slideIndex === idx ? ' active' : ''}`}
-                onClick={() => setSlideIndex(idx)}
-              >
-                0{idx + 1} {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="architecture-content" role="tabpanel">
+        <div className="architecture-content" key={`${activeProject}-${slideIndex}`} role="group" aria-label={`${currentSlide.label}, slide ${slideIndex + 1} of ${totalSlides}`}>
           <div className="architecture-code">
             <div className="code-label">
               <span>ASCII / {currentSlide.tag}</span>
@@ -767,28 +768,34 @@ function ArchitectureConsole() {
 
         <div className="architecture-screenfoot">
           <span>
-            {projectConfig.label.toUpperCase()} · SLIDE 0{slideIndex + 1} OF 0{totalSlides}
+            {currentSlide.tag} · {slideIndex + 1} / {totalSlides}
           </span>
-          <button
-            type="button"
-            onClick={handleNextSlide}
-            style={{
-              background: 'transparent',
-              border: 0,
-              color: 'var(--lime)',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              font: 'inherit',
-              fontWeight: 800,
-            }}
-          >
-            NEXT BLUEPRINT ({slideIndex === totalSlides - 1 ? '1' : slideIndex + 2}/{totalSlides}){' '}
-            <ChevronRight size={13} />
-          </button>
+          <span className="architecture-key-hint">Use ← → or swipe to move</span>
         </div>
       </div>
+
+      <nav className="architecture-deck-controls" aria-label={`${projectConfig.label} slide navigation`}>
+        <button className="deck-arrow" type="button" onClick={handlePrevSlide} aria-label="Previous architecture slide" title="Previous slide">
+          <ChevronLeft size={17} />
+        </button>
+        <div className="architecture-chapter-rail" role="group" aria-label="Choose architecture slide">
+          {slides.map((slide, index) => (
+            <button
+              key={slide.tag}
+              type="button"
+              className={`architecture-chapter${slideIndex === index ? ' active' : ''}`}
+              aria-label={`Show slide ${index + 1}: ${slide.label}`}
+              aria-current={slideIndex === index ? 'step' : undefined}
+              onClick={() => setSlideIndex(index)}
+            >
+              <span>0{index + 1}</span><small>{slide.label}</small>
+            </button>
+          ))}
+        </div>
+        <button className="deck-arrow next" type="button" onClick={handleNextSlide} aria-label="Next architecture slide" title="Next slide">
+          <ChevronRight size={17} />
+        </button>
+      </nav>
     </section>
   )
 }
@@ -1015,6 +1022,9 @@ export default function Portfolio() {
           <div className="footer-bottom">
             <a className="button button-light" href="mailto:iamsouravamaurya@gmail.com">
               Initiate collaboration <Mail size={16} />
+            </a>
+            <a className="button button-whatsapp" href="https://wa.me/918527796255?text=Hi%20Sourav%2C%20I%20saw%20your%20portfolio." target="_blank" rel="noreferrer">
+              WhatsApp · +91 85277 96255 <MessageCircle size={16} />
             </a>
             <div className="contact-info">
               <a href="mailto:iamsouravamaurya@gmail.com">iamsouravamaurya@gmail.com</a>
